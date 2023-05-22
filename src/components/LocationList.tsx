@@ -5,46 +5,35 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { Button, Modal } from '@mui/material';
 import { SimpleMap } from './SimpleMap';
+import { useQuery } from 'react-query';
+import { Loader } from './Loader';
 
-export const locationsMock: Location[] = [
-  {
-    id: 2,
-    name: 'Home',
-    coords: {
-      lat: 1477,
-      lng: 699877,
-    },
-  },
-  {
-    id: 2,
-    name: 'Parents',
-    coords: {
-      lat: 1477,
-      lng: 699877,
-    },
-  },
-  {
-    id: 3,
-    name: 'Work',
-    coords: {
-      lat: 1477,
-      lng: 699877,
-    },
-  },
-  {
-    id: 4,
-    name: "Kid's School",
-    coords: {
-      lat: 1477,
-      lng: 699877,
-    },
-  },
-];
-
-export const LocationList = ({ locations }: { locations: Location[] }) => {
+export const LocationList = () => {
   const [openViewModal, setOpenViewModal] = React.useState(false);
   const [currentLocation, setCurrentLocation] = React.useState<Location>();
   const handleViewModalClose = () => setOpenViewModal(false);
+  const getLocations = async () => {
+    const response = await fetch(`http://localhost:6868/api/locations`);
+    const result = await response.json();
+    return {
+      locations: result.data.map(
+        (location: { id: string; name: string; latitude: string; longitude: string }) => {
+          return {
+            id: location.id,
+            name: location.name,
+            coords: {
+              lat: Number(location.latitude),
+              lng: Number(location.longitude),
+            },
+          };
+        }
+      ),
+    };
+  };
+  const { data, status } = useQuery('locations', getLocations);
+  if (status === 'loading') {
+    return <Loader />;
+  }
 
   const LocationItem = ({ location }: { location: Location }) => {
     return (
@@ -68,6 +57,7 @@ export const LocationList = ({ locations }: { locations: Location[] }) => {
       </>
     );
   };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2}>
@@ -77,7 +67,7 @@ export const LocationList = ({ locations }: { locations: Location[] }) => {
         <Grid item xs={6}>
           <Item>Actions</Item>
         </Grid>
-        {locations.map(location => {
+        {data?.locations.map((location: Location) => {
           return <LocationItem location={location} />;
         })}
       </Grid>

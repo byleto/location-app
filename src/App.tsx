@@ -1,11 +1,16 @@
 import './App.css';
-import { LocationList, locationsMock } from './components/LocationList';
+import { LocationList } from './components/LocationList';
+import { QueryClientProvider, QueryClient } from 'react-query';
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <div className="App">
-      <LocationList locations={locationsMock} />
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className="App">
+        <LocationList />
+      </div>
+    </QueryClientProvider>
   );
 }
 

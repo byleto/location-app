@@ -2,6 +2,7 @@ import GoogleMapReact from 'google-map-react';
 import { Location } from './LocationList';
 
 import './map.css';
+import { API_KEY } from '../constants';
 
 const LocationPin = ({ text }: { text?: string; }) => (
   <div className="pin">
@@ -21,7 +22,7 @@ export const SimpleMap = ({
 
     <div className="google-map">
       <GoogleMapReact
-        bootstrapURLKeys={{ key: 'AIzaSyCcL9gSwPyYGlniOCGZkiC5SrBvqyevRDE' }}
+        bootstrapURLKeys={{ key: API_KEY || ""}}
         defaultCenter={location?.coords}
         defaultZoom={zoomLevel}>
         <LocationPin text={location?.name} />

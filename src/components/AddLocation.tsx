@@ -1,10 +1,11 @@
 import { Box, Grid } from '@mui/material';
 import GoogleMapReact from 'google-map-react';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import axios from 'axios';
 import './map.css';
 import { useQueryClient } from 'react-query';
 import isEmpty from 'lodash/isEmpty';
+import { API_KEY } from '../constants';
 
 export const AddLocation = ({ handleClose }: { handleClose: any }) => {
   const [latitude, setLatitude] = useState(0);
@@ -13,30 +14,33 @@ export const AddLocation = ({ handleClose }: { handleClose: any }) => {
   const [validationError, setValidationError] = useState('');
   const queryClient = useQueryClient();
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    const location = {
-      latitude,
-      longitude,
-      name: locationName,
-    };
-    if (isEmpty(locationName)) {
-      setValidationError('Please provide a location name');
-      return;
-    }
-    if (latitude === 0 && longitude === 0) {
-      setValidationError('Please select a location on the map');
-      return;
-    }
-    try {
-      const response = await axios.post('http://localhost:6868/api/location', location);
-      queryClient.invalidateQueries(['locations']);
-      handleClose();
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const handleSubmit = useCallback(
+    async (e: any) => {
+      e.preventDefault();
+      const location = {
+        latitude,
+        longitude,
+        name: locationName,
+      };
+      if (isEmpty(locationName)) {
+        setValidationError('Please provide a location name');
+        return;
+      }
+      if (latitude === 0 && longitude === 0) {
+        setValidationError('Please select a location on the map');
+        return;
+      }
+      try {
+        const response = await axios.post('http://localhost:6868/api/location', location);
+        queryClient.invalidateQueries(['locations']);
+        handleClose();
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [latitude, longitude, locationName]
+  );
 
   return (
     <form onSubmit={handleSubmit}>
@@ -73,7 +77,7 @@ export const AddLocation = ({ handleClose }: { handleClose: any }) => {
           <Grid item xs={12}>
             <div className="google-map">
               <GoogleMapReact
-                bootstrapURLKeys={{ key: 'AIzaSyCcL9gSwPyYGlniOCGZkiC5SrBvqyevRDE' }}
+                bootstrapURLKeys={{ key: API_KEY || ''}}
                 zoom={15}
                 onClick={e => {
                   setLatitude(e.lat);

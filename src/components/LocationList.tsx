@@ -7,7 +7,7 @@ import { Button, Modal } from '@mui/material';
 import { SimpleMap } from './SimpleMap';
 import { useQuery } from 'react-query';
 import { Loader } from './Loader';
-import { AddLocation } from './AddLocation';
+import { AddLocation } from './AddLocation/AddLocation';
 
 const getLocations = async () => {
   const response = await fetch(`http://localhost:6868/api/locations`);

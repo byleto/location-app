@@ -2,7 +2,7 @@
   "name": "location-app",
   "version": "0.1.0",
   "private": true,
-  "proxy":"http://localhost:6868",
+  "proxy": "http://localhost:6868",
   "dependencies": {
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
@@ -14,9 +14,12 @@
     "@types/node": "^16.18.32",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
+    "axios": "^1.4.0",
     "google-map-react": "^2.2.1",
+    "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.9",
     "react-query": "^3.39.3",
     "react-scripts": "^5.0.1",
     "web-vitals": "^2.1.4"
@@ -42,6 +45,7 @@
   },
   "devDependencies": {
     "@types/google-map-react": "^2.1.7",
+    "@types/lodash": "^4.14.194",
     "eslint-plugin-n": "^16.0.0",
     "typescript": "^5.0.4"
   }

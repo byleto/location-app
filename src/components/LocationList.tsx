@@ -7,29 +7,34 @@ import { Button, Modal } from '@mui/material';
 import { SimpleMap } from './SimpleMap';
 import { useQuery } from 'react-query';
 import { Loader } from './Loader';
+import { AddLocation } from './AddLocation';
+
+const getLocations = async () => {
+  const response = await fetch(`http://localhost:6868/api/locations`);
+  const result = await response.json();
+  return {
+    locations: result.data.map(
+      (location: { id: string; name: string; latitude: string; longitude: string }) => {
+        return {
+          id: location.id,
+          name: location.name,
+          coords: {
+            lat: Number(location.latitude),
+            lng: Number(location.longitude),
+          },
+        };
+      }
+    ),
+  };
+};
 
 export const LocationList = () => {
   const [openViewModal, setOpenViewModal] = React.useState(false);
+  const [openAddModal, setOpenAddModal] = React.useState(false);
   const [currentLocation, setCurrentLocation] = React.useState<Location>();
   const handleViewModalClose = () => setOpenViewModal(false);
-  const getLocations = async () => {
-    const response = await fetch(`http://localhost:6868/api/locations`);
-    const result = await response.json();
-    return {
-      locations: result.data.map(
-        (location: { id: string; name: string; latitude: string; longitude: string }) => {
-          return {
-            id: location.id,
-            name: location.name,
-            coords: {
-              lat: Number(location.latitude),
-              lng: Number(location.longitude),
-            },
-          };
-        }
-      ),
-    };
-  };
+  const handleAddModalClose = () => setOpenAddModal(false);
+
   const { data, status } = useQuery('locations', getLocations);
   if (status === 'loading') {
     return <Loader />;
@@ -60,6 +65,13 @@ export const LocationList = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
+      <Button
+        onClick={() => {
+          setOpenAddModal(true);
+        }}
+        variant="outlined">
+        Add Location
+      </Button>
       <Grid container spacing={2}>
         <Grid item xs={6}>
           <Item>Location</Item>
@@ -67,8 +79,8 @@ export const LocationList = () => {
         <Grid item xs={6}>
           <Item>Actions</Item>
         </Grid>
-        {data?.locations.map((location: Location) => {
-          return <LocationItem location={location} />;
+        {data?.locations.map((location: Location, index: number) => {
+          return <LocationItem key={index} location={location} />;
         })}
       </Grid>
       <ViewLocation
@@ -76,6 +88,7 @@ export const LocationList = () => {
         open={openViewModal}
         handleClose={handleViewModalClose}
       />
+      <AddLocationModal open={openAddModal} handleClose={handleAddModalClose} />
     </Box>
   );
 };
@@ -120,10 +133,26 @@ const ViewLocation = ({
       <Modal
         open={open}
         onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description">
+        aria-labelledby="view location"
+        aria-describedby="viw location on map">
         <Box sx={style}>
           <SimpleMap location={location} zoomLevel={15} />
+        </Box>
+      </Modal>
+    </div>
+  );
+};
+
+const AddLocationModal = ({ open, handleClose }: { open: boolean; handleClose: any }) => {
+  return (
+    <div>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="add location"
+        aria-describedby="add a new location">
+        <Box sx={style}>
+          <AddLocation handleClose={handleClose} />
         </Box>
       </Modal>
     </div>
